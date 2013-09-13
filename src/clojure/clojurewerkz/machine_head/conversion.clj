@@ -1,26 +1,10 @@
 (ns clojurewerkz.machine-head.conversion
   "Internal conversion functions that transform
    Clojure data structures to Paho Java client classes"
-  (:require [clojurewerkz.support.internal :as i])
-  (:import [org.eclipse.paho.client.mqttv3 MqttClient MqttConnectOptions]))
-
-(defprotocol CharSource
-  (to-char-array [input] "Converts an input to char[]"))
-
-(extend-protocol CharSource
-  String
-  (to-char-array [input]
-    (.toCharArray input)))
-
-(extend i/char-array-type
-  CharSource
-  {:to-char-array identity})
-
-(extend nil
-  CharSource
-  {:to-char-array (constantly nil)})
-
-
+  (:require [clojurewerkz.support.chars :refer [to-char-array]]
+            [clojurewerkz.support.bytes :refer [to-byte-array]])
+  (:import [org.eclipse.paho.client.mqttv3 MqttClient MqttConnectOptions
+            MqttMessage]))
 
 (defn ->connect-options
   [m]
@@ -32,3 +16,9 @@
     (when-let [i (:keep-alive-interval m)]
       (.setKeepAliveInterval o i))
     o))
+
+(defn ->message
+  [input]
+  (if (nil? input)
+    (MqttMessage.)
+    (MqttMessage. ^bytes (to-byte-array input))))

@@ -22,3 +22,9 @@
      (.disconnect client))
   ([^MqttClient client ^long timeout]
      (.disconnect client timeout)))
+
+
+(defn publish
+  "Publishes a message to a topic."
+  [^MqttClient client ^String topic payload]
+  (.publish client topic (cnv/->message payload)))
