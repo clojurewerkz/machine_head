@@ -12,3 +12,4 @@ debug/*
 tmp/*
 .nrepl*
 .lck
+checkouts/*
