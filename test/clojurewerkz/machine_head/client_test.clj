@@ -1,6 +1,7 @@
 (ns clojurewerkz.machine-head.client-test
   (:require [clojurewerkz.machine-head.client :as mh]
-            [clojure.test :refer :all]))
+            [clojure.test :refer :all])
+  (:import java.util.concurrent.atomic.AtomicInteger))
 
 
 (deftest test-connection
@@ -22,4 +23,16 @@
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh.topic1" "hello"))
+    (mh/disconnect c)))
+
+(deftest test-basic-topic-subscription
+  (let [id (mh/generate-id)
+        c  (mh/connect "tcp://127.0.0.1:1883" id)
+        i  (AtomicInteger.)]
+    (mh/subscribe c ["mh.topic"] (fn [^String topic meta ^bytes payload]
+                                   (.incrementAndGet i)))
+    (is (mh/connected? c))
+    (dotimes [_ 100]
+      (mh/publish c "mh.topic" "payload"))
+    (is (= 100 (.get i)))
     (mh/disconnect c)))

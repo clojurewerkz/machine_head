@@ -22,3 +22,19 @@
   (if (nil? input)
     (MqttMessage.)
     (MqttMessage. ^bytes (to-byte-array input))))
+
+(defn message->metadata
+  "Produces an immutable map of message metadata (all attributes
+   except for payload)"
+  [^MqttMessage msg]
+  {:retained?  (.isRetained msg)
+   :qos        (.getQos msg)
+   :duplicate? (.isDuplicate msg)})
+
+(defn ^"[S" ->topic-array
+  "Coerces the input to an array of strings
+   (topic names)"
+  [s]
+  (into-array String (if (coll? s)
+                       s
+                       [s])))
