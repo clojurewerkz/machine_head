@@ -7,10 +7,19 @@
   (dotimes [i 50]
     (let [id (format "mh.tests-%d" i)
           c  (mh/connect "tcp://127.0.0.1:1883" id)]
+      (is (mh/connected? c))
       (mh/disconnect c))))
 
 (deftest test-publishing-empty-messages
   (let [c (mh/connect "tcp://127.0.0.1:1883" "mh.tests-1")]
+    (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh.topic1" nil))
+    (mh/disconnect c)))
+
+(deftest test-publishing-messages
+  (let [c (mh/connect "tcp://127.0.0.1:1883" "mh.tests-1")]
+    (is (mh/connected? c))
+    (dotimes [i 1000]
+      (mh/publish c "mh.topic1" "hello"))
     (mh/disconnect c)))

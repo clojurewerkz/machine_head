@@ -1,13 +1,13 @@
 (ns clojurewerkz.machine-head.client
   (:require [clojurewerkz.machine-head.conversion :as cnv])
-  (:import [org.eclipse.paho.client.mqttv3 MqttClient]))
+  (:import [org.eclipse.paho.client.mqttv3 IMqttClient]))
 
-(defn ^MqttClient prepare
+(defn ^IMqttClient prepare
   "Instantiates a new client"
   [^String uri ^String client-id]
   (MqttClient. uri client-id))
 
-(defn ^MqttClient connect
+(defn ^IMqttClient connect
   "Instantiates a new client and connects to MQTT broker."
   ([^String uri ^String client-id]
      (doto (prepare uri client-id)
@@ -18,13 +18,17 @@
 
 (defn disconnect
   "Disconnects from MQTT broker."
-  ([^MqttClient client]
+  ([^IMqttClient client]
      (.disconnect client))
-  ([^MqttClient client ^long timeout]
+  ([^IMqttClient client ^long timeout]
      (.disconnect client timeout)))
 
+(defn connected?
+  "Returns true if client is currently connected"
+  [^IMqttClient client]
+  (.isConnected client))
 
 (defn publish
   "Publishes a message to a topic."
-  [^MqttClient client ^String topic payload]
+  [^IMqttClient client ^String topic payload]
   (.publish client topic (cnv/->message payload)))
