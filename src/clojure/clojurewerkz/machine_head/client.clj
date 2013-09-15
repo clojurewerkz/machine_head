@@ -38,8 +38,8 @@
 
 (defn publish
   "Publishes a message to a topic."
-  [^IMqttClient client ^String topic payload]
-  (.publish client topic (cnv/->message payload)))
+  ([^IMqttClient client ^String topic payload]
+     (.publish client topic (cnv/->message payload))))
 
 (defn ^:private ^MqttCallback reify-mqtt-callback
   [delivery-fn delivery-complete-fn connection-lost-fn]
@@ -97,8 +97,14 @@
   ([^IMqttClient client topics qos handler-fn]
      (subscribe-with-qos client topics qos handler-fn {}))
   ([^IMqttClient client topics qos handler-fn {:keys [on-connection-lost
-                                                  on-delivery-complete]}]
+                                                      on-delivery-complete]}]
      (let [cb (reify-mqtt-callback handler-fn on-delivery-complete on-connection-lost)]
        (.setCallback client cb)
        (.subscribe client (cnv/->topic-array topics) (cnv/->int-array qos))
        client)))
+
+(defn unsubscribe
+  "Unsubscribes from one or multiple topics (if `topics` is a collection
+   or sequence)"
+  ([^IMqttClient client topics]
+     (.unsubscribe client (cnv/->topic-array topics))))
