@@ -54,6 +54,20 @@
         (delivery-complete-fn ^IMqttDeliveryToken token)))))
 
 (defn subscribe
+  "Subscribes to one or multiple topics (if `topics` is a collection
+   or sequence).
+
+   Provided handler function will be invoked with 3 arguments:
+
+    * Topic message was received on
+    * Immutable map of message metadata
+    * Byte array of message payload
+
+   Options:
+
+    * :on-delivery-complete:
+    * :on-connection-lost: function that will be called when connection
+                          to broker is lost"
   ([^IMqttClient client topics handler-fn]
      (subscribe client topics handler-fn {}))
   ([^IMqttClient client topics handler-fn {:keys [on-connection-lost
@@ -61,4 +75,30 @@
      (let [cb (reify-mqtt-callback handler-fn on-delivery-complete on-connection-lost)]
        (.setCallback client cb)
        (.subscribe client (cnv/->topic-array topics))
+       client)))
+
+(defn subscribe-with-qos
+  "Subscribes to one or multiple topics (if `topics` is a collection
+   or sequence) with provided QoS level(s).
+
+   QoS level must be either an int (from 1 to 3) or a collection of ints from.
+
+   Provided handler function will be invoked with 3 arguments:
+
+    * Topic message was received on
+    * Immutable map of message metadata
+    * Byte array of message payload
+
+   Options:
+
+    * :on-delivery-complete:
+    * :on-connection-lost: function that will be called when connection
+                          to broker is lost"
+  ([^IMqttClient client topics qos handler-fn]
+     (subscribe-with-qos client topics qos handler-fn {}))
+  ([^IMqttClient client topics qos handler-fn {:keys [on-connection-lost
+                                                  on-delivery-complete]}]
+     (let [cb (reify-mqtt-callback handler-fn on-delivery-complete on-connection-lost)]
+       (.setCallback client cb)
+       (.subscribe client (cnv/->topic-array topics) (cnv/->int-array qos))
        client)))

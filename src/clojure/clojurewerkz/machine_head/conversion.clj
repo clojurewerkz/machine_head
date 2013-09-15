@@ -38,3 +38,11 @@
   (into-array String (if (coll? s)
                        s
                        [s])))
+
+(defn ^"[I" ->int-array
+  "Coerces the input to an array of integers"
+  [i]
+  (int-array (if (coll? i)
+               i
+               [i])))
+
