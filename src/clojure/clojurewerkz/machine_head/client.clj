@@ -1,5 +1,6 @@
 (ns clojurewerkz.machine-head.client
-  (:require [clojurewerkz.machine-head.conversion :as cnv])
+  (:require [clojurewerkz.machine-head.conversion :as cnv]
+            [clojurewerkz.support.bytes :refer [to-byte-array]])
   (:import [org.eclipse.paho.client.mqttv3 IMqttClient
             MqttCallback
             MqttMessage
@@ -39,7 +40,11 @@
 (defn publish
   "Publishes a message to a topic."
   ([^IMqttClient client ^String topic payload]
-     (.publish client topic (cnv/->message payload))))
+     (.publish client topic (cnv/->message payload)))
+  ([^IMqttClient client ^String topic payload qos]
+     (.publish client topic ^bytes (to-byte-array payload) qos true))
+  ([^IMqttClient client ^String topic payload qos retained?]
+     (.publish client topic ^bytes (to-byte-array payload) qos retained?)))
 
 (defn ^:private ^MqttCallback reify-mqtt-callback
   [delivery-fn delivery-complete-fn connection-lost-fn]

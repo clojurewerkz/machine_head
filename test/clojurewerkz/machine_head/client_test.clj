@@ -115,3 +115,11 @@
       (mh/publish c "mh.temp-topic3" "payload"))
     (is (= 10 (.get i)))
     (mh/disconnect c)))
+
+;; does not demonstrate how QoS actually works. MK.
+(deftest test-publishing-messages-with-qos
+  (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
+    (is (mh/connected? c))
+    (dotimes [i 1000]
+      (mh/publish c "mh.qos.topic1" "hello" 1))
+    (mh/disconnect c)))
