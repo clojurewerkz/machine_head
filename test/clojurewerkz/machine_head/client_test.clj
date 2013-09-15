@@ -94,3 +94,24 @@
       (mh/publish c "mh.temp-topic" "payload"))
     (is (= 0 (.get i)))
     (mh/disconnect c)))
+
+
+(deftest test-multi-topic-unsubscription
+  (let [id (mh/generate-id)
+        c  (mh/connect "tcp://127.0.0.1:1883" id)
+        i  (AtomicInteger.)]
+    (mh/subscribe c ["mh.temp-topic1"
+                     "mh.temp-topic2"
+                     "mh.temp-topic3"] (fn [^String topic meta ^bytes payload]
+                                         (.incrementAndGet i)))
+    (mh/unsubscribe c ["mh.temp-topic1"
+                       "mh.temp-topic2"])
+    (is (mh/connected? c))
+    (dotimes [_ 10]
+      (mh/publish c "mh.temp-topic1" "payload"))
+    (dotimes [_ 10]
+      (mh/publish c "mh.temp-topic2" "payload"))
+    (dotimes [_ 10]
+      (mh/publish c "mh.temp-topic3" "payload"))
+    (is (= 10 (.get i)))
+    (mh/disconnect c)))
