@@ -1,10 +1,9 @@
 (ns clojurewerkz.machine-head.client
   (:require [clojurewerkz.machine-head.conversion :as cnv]
             [clojurewerkz.support.bytes :refer [to-byte-array]])
-  (:import [org.eclipse.paho.client.mqttv3 IMqttClient
-            MqttCallback
-            MqttMessage
-            IMqttDeliveryToken]))
+  (:import [org.eclipse.paho.client.mqttv3
+            IMqttClient MqttClient
+            MqttCallback MqttMessage IMqttDeliveryToken]))
 
 (defn ^IMqttClient prepare
   "Instantiates a new client"
