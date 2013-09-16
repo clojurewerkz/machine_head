@@ -63,6 +63,12 @@ Machine Head API is very unstable at the moment. It's not yet
 time to work on documentation.
 
 
+## Supported MQTT Broker Implementations
+
+Machine Head is tested against [RabbitMQ with MQTT
+plugin](http://www.rabbitmq.com/mqtt.html) and
+[Mosquito](http://mosquitto.org/).
+
 
 ## Supported Clojure Versions
 
