@@ -34,6 +34,7 @@
     (is (mh/connected? c))
     (dotimes [_ 100]
       (mh/publish c "mh.topic" "payload"))
+    (Thread/sleep 100)
     (is (= 100 (.get i)))
     (mh/disconnect c)))
 
