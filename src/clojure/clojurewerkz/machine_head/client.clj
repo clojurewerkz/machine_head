@@ -85,7 +85,7 @@
   "Subscribes to one or multiple topics (if `topics` is a collection
    or sequence) with provided QoS level(s).
 
-   QoS level must be either an int (from 1 to 3) or a collection of ints from.
+   QoS level must be either an int (from 0 to 2) or a collection of ints from.
 
    Provided handler function will be invoked with 3 arguments:
 
