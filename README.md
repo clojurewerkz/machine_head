@@ -107,7 +107,6 @@ Then create a branch and make your changes on it. Once you are done
 with your changes and all tests pass, submit a pull request on GitHub.
 
 
-
 ## License
 
 Copyright (C) 2013 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team.
