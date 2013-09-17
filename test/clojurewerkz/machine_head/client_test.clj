@@ -49,6 +49,7 @@
       (mh/publish c "mh.topic1" "payload"))
     (dotimes [_ 60]
       (mh/publish c "mh.topic2" "payload"))
+    (Thread/sleep 100)
     (is (= 110 (.get i)))
     (mh/disconnect c)))
 
@@ -63,6 +64,7 @@
     (is (mh/connected? c))
     (dotimes [_ 100]
       (mh/publish c "mh.topic" "payload"))
+    (Thread/sleep 100)
     (is (= 100 (.get i)))
     (mh/disconnect c)))
 
@@ -80,6 +82,7 @@
       (mh/publish c "mh.topic2" "payload"))
     (dotimes [_ 100]
       (mh/publish c "mh.topic3" "payload"))
+    (Thread/sleep 100)
     (is (= 200 (.get i)))
     (mh/disconnect c)))
 
