@@ -1,7 +1,9 @@
 (ns clojurewerkz.machine-head.client-test
-  (:require [clojurewerkz.machine-head.client :as mh]
+  (:require [clojurewerkz.machine-head.client     :as mh]
+            [clojurewerkz.machine-head.durability :as md]
             [clojure.test :refer :all])
-  (:import java.util.concurrent.atomic.AtomicInteger))
+  (:import java.util.concurrent.atomic.AtomicInteger
+           org.eclipse.paho.client.mqttv3.persist.MemoryPersistence))
 
 
 (deftest test-connection
@@ -10,6 +12,15 @@
           c  (mh/connect "tcp://127.0.0.1:1883" id)]
       (is (mh/connected? c))
       (mh/disconnect c))))
+
+(deftest test-connection-with-provided-persister
+  (dotimes [i 10]
+    (let [id  (format "mh.tests-%d" i)
+          p   (md/new-memory-persister)
+          c   (mh/connect "tcp://127.0.0.1:1883" id p)]
+      (is (mh/connected? c))
+      (mh/disconnect c))))
+
 
 (deftest test-publishing-empty-messages
   (let [c (mh/connect "tcp://127.0.0.1:1883" "mh.tests-1")]

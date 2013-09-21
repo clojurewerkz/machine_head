@@ -1,14 +1,17 @@
 (ns clojurewerkz.machine-head.client
+  "Key MQTT client functions: connection, subscription, publishing"
   (:require [clojurewerkz.machine-head.conversion :as cnv]
             [clojurewerkz.support.bytes :refer [to-byte-array]])
   (:import [org.eclipse.paho.client.mqttv3
-            IMqttClient MqttClient
-            MqttCallback MqttMessage IMqttDeliveryToken]))
+            IMqttClient MqttClient MqttCallback
+            MqttMessage IMqttDeliveryToken MqttClientPersistence]))
 
 (defn ^IMqttClient prepare
   "Instantiates a new client"
-  [^String uri ^String client-id]
-  (MqttClient. uri client-id))
+  ([^String uri ^String client-id]
+     (MqttClient. uri client-id))
+  ([^String uri ^String client-id ^MqttClientPersistence persister]
+     (MqttClient. uri client-id persister)))
 
 (defn ^IMqttClient connect
   "Instantiates a new client and connects to MQTT broker."
@@ -17,6 +20,9 @@
        .connect))
   ([^String uri ^String client-id opts]
      (doto (prepare uri client-id)
+       (.connect (cnv/->connect-options opts))))
+  ([^String uri ^String client-id ^MqttClientPersistence persister opts]
+     (doto (prepare uri client-id persister)
        (.connect (cnv/->connect-options opts)))))
 
 (defn disconnect
