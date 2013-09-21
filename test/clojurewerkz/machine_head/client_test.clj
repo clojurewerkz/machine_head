@@ -121,9 +121,23 @@
     (mh/disconnect c)))
 
 ;; does not demonstrate how QoS actually works. MK.
-(deftest test-publishing-messages-with-qos
+(deftest test-publishing-messages-with-qos-0
+  (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
+    (is (mh/connected? c))
+    (dotimes [i 1000]
+      (mh/publish c "mh.qos.topic1" "hello" 0))
+    (mh/disconnect c)))
+
+(deftest test-publishing-messages-with-qos-1
   (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh.qos.topic1" "hello" 1))
+    (mh/disconnect c)))
+
+(deftest test-publishing-messages-with-qos-2
+  (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
+    (is (mh/connected? c))
+    (dotimes [i 1000]
+      (mh/publish c "mh.qos.topic1" "hello" 2))
     (mh/disconnect c)))
