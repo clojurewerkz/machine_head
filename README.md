@@ -23,8 +23,13 @@ To subscribe for announcements of releases, important changes and so on, please 
 
 ## Project Maturity
 
-Machine Head is *very* young and incomplete. It is currently *not useful to anyone
-but the author*.
+Machine Head is *very* young and not complete. However, the key functionality
+(connections, publishing, subscriptions) is supported. Barring the fact that
+[documentation](https://github.com/clojurewerkz/machine_head.docs) work has barely been started,
+we encourage you to give the library a try.
+
+The API for key operations may changes in the future, although this is fairly
+unlikely, given how small the library is.
 
 
 
@@ -44,7 +49,7 @@ definition to your `pom.xml`:
 
 With Leiningen:
 
-    [clojurewerkz/machine_head "1.0.0-SNAPSHOT"]
+    [clojurewerkz/machine_head "1.0.0-beta1"]
 
 
 With Maven:
@@ -52,7 +57,7 @@ With Maven:
     <dependency>
       <groupId>clojurewerkz</groupId>
       <artifactId>machine_head</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0-beta1</version>
     </dependency>
 
 
