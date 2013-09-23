@@ -1,4 +1,4 @@
-## Machine Head 1.0.0-alpha1 (initial release)
+## Machine Head 1.0.0-beta1 (initial release)
 
 ### Core Functionality
 
