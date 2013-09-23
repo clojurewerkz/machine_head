@@ -2,7 +2,7 @@
 
 ### Core Functionality
 
-Machine Head `alpha1` supports connecting to MQTT brokers
+Machine Head `beta1` supports connecting to MQTT brokers
 (tested against Mosquitto and RabbitMQ MQTT plugin),
 topic subscriptions and publishing.
 
