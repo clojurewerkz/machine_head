@@ -118,3 +118,11 @@
    or sequence)"
   ([^IMqttClient client topics]
      (.unsubscribe client (cnv/->topic-array topics))))
+
+(defn pending-delivery-tokens
+  "Retuns pending message delivery tokens, if any.
+
+   If all messages were published successfully after last
+   client termination, returns an empty collection."
+  [^IMqttClient client]
+  (into [] (.getPendingDeliveryTokens client)))
