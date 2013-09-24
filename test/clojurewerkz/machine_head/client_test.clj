@@ -71,7 +71,7 @@
         c  (mh/connect "tcp://127.0.0.1:1883" id)
         i  (AtomicInteger.)]
     (mh/subscribe-with-qos c ["mh.topic"] 1 (fn [^String topic meta ^bytes payload]
-                                                (.incrementAndGet i)))
+                                              (.incrementAndGet i)))
     (is (mh/connected? c))
     (dotimes [_ 100]
       (mh/publish c "mh.topic" "payload"))
@@ -85,7 +85,7 @@
         c  (mh/connect "tcp://127.0.0.1:1883" id)
         i  (AtomicInteger.)]
     (mh/subscribe-with-qos c ["mh.topic1" "mh.topic3"] [1 2] (fn [^String topic meta ^bytes payload]
-                                                (.incrementAndGet i)))
+                                                               (.incrementAndGet i)))
     (is (mh/connected? c))
     (dotimes [_ 100]
       (mh/publish c "mh.topic1" "payload"))
@@ -102,7 +102,7 @@
         c  (mh/connect "tcp://127.0.0.1:1883" id)
         i  (AtomicInteger.)]
     (mh/subscribe c ["mh.temp-topic"] (fn [^String topic meta ^bytes payload]
-                                   (.incrementAndGet i)))
+                                        (.incrementAndGet i)))
     (mh/unsubscribe c ["mh.temp-topic"])
     (is (mh/connected? c))
     (dotimes [_ 100]
