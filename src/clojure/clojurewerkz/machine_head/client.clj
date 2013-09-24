@@ -46,7 +46,7 @@
 (defn publish
   "Publishes a message to a topic."
   ([^IMqttClient client ^String topic payload]
-     (.publish client topic (cnv/->message payload)))
+     (.publish client topic (cnv/to-message payload)))
   ([^IMqttClient client ^String topic payload qos]
      (.publish client topic ^bytes (to-byte-array payload) qos true))
   ([^IMqttClient client ^String topic payload qos retained?]

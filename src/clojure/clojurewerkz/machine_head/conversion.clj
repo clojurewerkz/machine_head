@@ -17,11 +17,22 @@
       (.setKeepAliveInterval o i))
     o))
 
-(defn ->message
-  [input]
-  (if (nil? input)
-    (MqttMessage.)
+(defprotocol MessageSource
+  (^MqttMessage to-message [input] "Instantiates an MQTT message from input"))
+
+(extend-protocol MessageSource
+  MqttMessage
+  (to-message [input]
+    input)
+
+  nil
+  (to-message [input]
+    (MqttMessage.))
+
+  Object
+  (to-message [input]
     (MqttMessage. ^bytes (to-byte-array input))))
+
 
 (defn message->metadata
   "Produces an immutable map of message metadata (all attributes
@@ -45,4 +56,3 @@
   (int-array (if (coll? i)
                i
                [i])))
-
