@@ -1,5 +1,14 @@
 ## Changes Between 1.0.0-beta1 and 1.0.0-beta2
 
+### Disconnect and Close
+
+### More Flexible Publish
+
+`clojurewerkz.machine-head.client/disconnect-and-close` is a new function that's
+identical to `clojurewerkz.machine-head.client/disconnect` but also releases
+all resources used by the client (e.g. file descriptors used by durable write-ahead
+log).
+
 ### More Flexible Publish
 
 `clojurewerkz.machine-head.client/publish` now also accepts `MqttMessage` instances
