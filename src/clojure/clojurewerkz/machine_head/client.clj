@@ -4,7 +4,8 @@
             [clojurewerkz.support.bytes :refer [to-byte-array]])
   (:import [org.eclipse.paho.client.mqttv3
             IMqttClient MqttClient MqttCallback
-            MqttMessage IMqttDeliveryToken MqttClientPersistence]))
+            MqttMessage IMqttDeliveryToken MqttClientPersistence
+            IMqttDeliveryToken]))
 
 (defn ^IMqttClient prepare
   "Instantiates a new client"
@@ -126,3 +127,11 @@
    client termination, returns an empty collection."
   [^IMqttClient client]
   (into [] (.getPendingDeliveryTokens client)))
+
+(defn pending-messages
+  "Retuns pending messages, if any.
+
+   If all messages were published successfully after last
+   client termination, returns an empty collection."
+  [^IMqttClient client]
+  (map (fn [^IMqttDeliveryToken t] (.getMessage t)) (pending-delivery-tokens client)))
