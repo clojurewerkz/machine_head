@@ -1,5 +1,11 @@
 ## Changes Between 1.0.0-beta1 and 1.0.0-beta2
 
+### More Flexible Publish
+
+`clojurewerkz.machine-head.client/publish` now also accepts `MqttMessage` instances
+that makes it easy to republish pending messages returned by `clojurewerkz.machine-head.client/pending-messages`.
+
+
 ### Pending Messages
 
 `clojurewerkz.machine-head.client/pending-messages` is
