@@ -1,5 +1,15 @@
 ## Changes Between 1.0.0-beta1 and 1.0.0-beta2
 
+### Pending Messages
+
+`clojurewerkz.machine-head.client/pending-messages` is
+a new function that is similar to `clojurewerkz.machine-head.client/pending-delivery-tokens`
+but returns messages instead of delivery tokens (identifiers). It returns
+a lazy sequence.
+
+The sequence can only be non-empty if client terminated before
+finishing delivering all previously published messages.
+
 ### Pending Delivery Tokens
 
 `clojurewerkz.machine-head.client/pending-delivery-tokens` is
