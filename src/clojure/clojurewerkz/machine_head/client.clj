@@ -33,6 +33,16 @@
   ([^IMqttClient client ^long timeout]
      (.disconnect client timeout)))
 
+(defn disconnect-and-close
+  "Disconnects from MQTT broker and releases all resources."
+  ([^IMqttClient client]
+     (doto client
+       .disconnect
+       .close))
+  ([^IMqttClient client ^long timeout]
+     (.disconnect client timeout)
+     (.close client)))
+
 (defn ^String generate-id
   "Generates a client id"
   []

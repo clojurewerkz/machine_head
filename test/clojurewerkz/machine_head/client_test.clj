@@ -11,7 +11,7 @@
     (let [id (format "mh.tests-%d" i)
           c  (mh/connect "tcp://127.0.0.1:1883" id)]
       (is (mh/connected? c))
-      (mh/disconnect c))))
+      (mh/disconnect-and-close c))))
 
 (deftest test-connection-with-provided-persister
   (dotimes [i 10]
