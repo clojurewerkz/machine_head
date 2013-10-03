@@ -5,6 +5,7 @@
   (:import java.util.concurrent.atomic.AtomicInteger
            org.eclipse.paho.client.mqttv3.persist.MemoryPersistence))
 
+(def ci? (System/getenv "CI"))
 
 (deftest test-connection
   (dotimes [i 50]
@@ -54,7 +55,7 @@
         c  (mh/connect "tcp://127.0.0.1:1883" id)
         i  (AtomicInteger.)]
     (mh/subscribe c ["mh/topics/#"] (fn [^String topic meta ^bytes payload]
-                                   (.incrementAndGet i)))
+                                      (.incrementAndGet i)))
     (is (mh/connected? c))
     (dotimes [_ 100]
       (mh/publish c "mh/topics/a/b/c" "payload"))
@@ -67,7 +68,7 @@
         c  (mh/connect "tcp://127.0.0.1:1883" id)
         i  (AtomicInteger.)]
     (mh/subscribe c ["mh/topics/+"] (fn [^String topic meta ^bytes payload]
-                                   (.incrementAndGet i)))
+                                      (.incrementAndGet i)))
     (is (mh/connected? c))
     (dotimes [_ 10]
       (mh/publish c "mh/topics/a" "payload"))
@@ -178,9 +179,10 @@
       (mh/publish c "mh.qos.topic1" "hello" 1))
     (mh/disconnect c)))
 
-(deftest test-publishing-messages-with-qos-2
-  (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
-    (is (mh/connected? c))
-    (dotimes [i 1000]
-      (mh/publish c "mh.qos.topic1" "hello" 2))
-    (mh/disconnect c)))
+(when-not ci?
+  (deftest test-publishing-messages-with-qos-2
+    (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
+      (is (mh/connected? c))
+      (dotimes [i 1000]
+        (mh/publish c "mh.qos.topic1" "hello" 2))
+      (mh/disconnect c))))
