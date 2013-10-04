@@ -1,15 +1,15 @@
 # Machine Head, a Clojure MQTT Client
 
-Machine Head is a Clojure MQTT client.
+Machine Head is a [Clojure MQTT client](http://clojuremqtt.info).
 
 
 ## Project Goals
 
  * Cover all (or nearly all) MQTT v3 features
- * Be well documented
- * Be well tested
+ * Be [well documented](http://clojuremqtt.info)
+ * Be [well tested](https://github.com/clojurewerkz/machine_head/tree/master/test/clojurewerkz/machine_head)
  * Provide a convenient API
- * Don't introduce a lot of latency and throughput overhead 
+ * Don't introduce a lot of latency and throughput overhead
 
 
 ## Community
@@ -25,7 +25,7 @@ To subscribe for announcements of releases, important changes and so on, please 
 
 Machine Head is *very* young and not complete. However, the key functionality
 (connections, publishing, subscriptions) is supported. Barring the fact that
-[documentation](https://github.com/clojurewerkz/machine_head.docs) work has barely been started,
+[documentation](http://clojuremqtt.info/) is work in progress,
 we encourage you to give the library a try.
 
 The API for key operations may changes in the future, although this is fairly
@@ -64,8 +64,14 @@ With Maven:
 
 ## Documentation & Examples
 
-Machine Head API is very unstable at the moment. It's not yet
-time to work on documentation.
+Machine Head [documentation guides](http://clojuremqtt.info) are work in progress:
+
+ * [Getting Started](http://clojuremqtt.info/articles/getting_started.html)
+
+### Examples
+
+[Code examples](https://github.com/clojurewerkz/machine_head.examples) are available
+in a separate repository.
 
 
 ## Supported MQTT Broker Implementations
