@@ -68,6 +68,8 @@ Machine Head [documentation guides](http://clojuremqtt.info) are work in progres
 
  * [Getting Started](http://clojuremqtt.info/articles/getting_started.html)
 
+[API reference](http://reference.clojuremqtt.info) is also available.
+
 ### Examples
 
 [Code examples](https://github.com/clojurewerkz/machine_head.examples) are available
