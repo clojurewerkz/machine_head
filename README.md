@@ -64,6 +64,8 @@ With Maven:
 
 ## Documentation & Examples
 
+### Guides
+
 Machine Head [documentation guides](http://clojuremqtt.info) are work in progress:
 
  * [Getting Started](http://clojuremqtt.info/articles/getting_started.html)
