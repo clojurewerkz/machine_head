@@ -80,7 +80,7 @@ in a separate repository.
 
 Machine Head is tested against [RabbitMQ with MQTT
 plugin](http://www.rabbitmq.com/mqtt.html) and
-[Mosquito](http://mosquitto.org/).
+[Mosquitto](http://mosquitto.org/).
 
 
 ## Supported Clojure Versions
