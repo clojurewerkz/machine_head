@@ -103,11 +103,12 @@ Machine Head requires Clojure 1.4+.
 Machine Head is part of the [group of Clojure libraries known as ClojureWerkz](http://clojurewerkz.org), together with
 
  * [Monger](http://clojuremongodb.info)
- * [Langohr](https://github.com/michaelklishin/langohr)
- * [Elastisch](https://github.com/clojurewerkz/elastisch)
+ * [Langohr](http://clojurerabbitmq.info)
+ * [Elastisch](http://clojureelasticsearch.info)
+ * [Cassaforte](http://clojurecassandra.info)
  * [Titanium](http://titanium.clojurewerkz.org)
  * [Neocons](http://clojureneo4j.info)
- * [Quartzite](https://github.com/michaelklishin/quartzite)
+ * [Quartzite](http://clojurequartz.info)
 
 and several others.
 
