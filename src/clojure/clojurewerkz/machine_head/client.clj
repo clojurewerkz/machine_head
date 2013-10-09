@@ -92,10 +92,13 @@
   ([^IMqttClient client topics handler-fn]
      (subscribe client topics handler-fn {}))
   ([^IMqttClient client topics handler-fn {:keys [on-connection-lost
-                                                  on-delivery-complete]}]
+                                                  on-delivery-complete
+                                                  qos]}]
      (let [cb (reify-mqtt-callback handler-fn on-delivery-complete on-connection-lost)]
        (.setCallback client cb)
-       (.subscribe client (cnv/->topic-array topics))
+       (if qos
+         (.subscribe client (cnv/->topic-array topics) (cnv/->int-array qos))
+         (.subscribe client (cnv/->topic-array topics)))
        client)))
 
 (defn subscribe-with-qos
