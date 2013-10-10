@@ -90,9 +90,9 @@
     * :on-connection-lost: function that will be called when connection
                           to broker is lost
     * :qos Optional QoS levels for the topic supplied.
-           QoS level must be an int (from 0 to 2) or a collection of ints if many topics were given.
+           QoS level must be an int (from 0 to 2) or a collection of ints if many topics were given."
   ([^IMqttClient client topics handler-fn]
-     (subscribe client topics handler-fn {}))"
+     (subscribe client topics handler-fn {}))
   ([^IMqttClient client topics handler-fn {:keys [on-connection-lost
                                                   on-delivery-complete
                                                   qos]}]
