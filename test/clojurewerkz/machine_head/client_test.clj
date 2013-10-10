@@ -103,8 +103,9 @@
   (let [id (mh/generate-id)
         c  (mh/connect "tcp://127.0.0.1:1883" id)
         i  (AtomicInteger.)]
-    (mh/subscribe-with-qos c ["mh.topic"] 1 (fn [^String topic meta ^bytes payload]
-                                              (.incrementAndGet i)))
+    (mh/subscribe c ["mh.topic"] (fn [^String topic meta ^bytes payload]
+                                   (.incrementAndGet i))
+                  {:qos 1})
     (is (mh/connected? c))
     (dotimes [_ 100]
       (mh/publish c "mh.topic" "payload"))
@@ -117,8 +118,9 @@
   (let [id (mh/generate-id)
         c  (mh/connect "tcp://127.0.0.1:1883" id)
         i  (AtomicInteger.)]
-    (mh/subscribe-with-qos c ["mh.topic1" "mh.topic3"] [1 2] (fn [^String topic meta ^bytes payload]
-                                                               (.incrementAndGet i)))
+    (mh/subscribe c ["mh.topic1" "mh.topic3"] (fn [^String topic meta ^bytes payload]
+                                                (.incrementAndGet i))
+                  {:qos [1 2]})
     (is (mh/connected? c))
     (dotimes [_ 100]
       (mh/publish c "mh.topic1" "payload"))
