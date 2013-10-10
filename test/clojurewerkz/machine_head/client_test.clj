@@ -163,6 +163,7 @@
       (mh/publish c "mh.temp-topic2" "payload"))
     (dotimes [_ 10]
       (mh/publish c "mh.temp-topic3" "payload"))
+    (Thread/sleep 50)
     (is (= 10 (.get i)))
     (mh/disconnect c)))
 
