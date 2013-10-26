@@ -1,5 +1,9 @@
 ## Changes Between 1.0.0-beta2 and 1.0.0-beta3
 
+No changes yet.
+
+## Changes Between 1.0.0-beta1 and 1.0.0-beta2
+
 ### `client/subscribe-with-qos` is Removed
 
 `clojurewerkz.machine-head.client/subscribe-with-qos` is removed. Instead,
@@ -7,8 +11,6 @@
 
 Contributed by Martin Trojer.
 
-
-## Changes Between 1.0.0-beta1 and 1.0.0-beta2
 
 ### Disconnect and Close
 
