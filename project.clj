@@ -1,4 +1,4 @@
-(defproject clojurewerkz/machine_head "1.0.0-beta3"
+(defproject clojurewerkz/machine_head "1.0.0-beta4-SNAPSHOT"
   :description "Clojure MQTT client"
   :dependencies [[org.clojure/clojure          "1.5.1"]
                  [org.eclipse.paho/mqtt-client "0.4.0"]
