@@ -1,6 +1,12 @@
 ## Changes Between 1.0.0-beta2 and 1.0.0-beta3
 
-No changes yet.
+### Clean Session Support
+
+`clojurewerkz.machine-head.client/connect` now supports one more
+option: `:clean-session`. When set to true, the option means that
+the client and MQTT broker should discard state that might have
+been kept from earlier connections.
+
 
 ## Changes Between 1.0.0-beta1 and 1.0.0-beta2
 
