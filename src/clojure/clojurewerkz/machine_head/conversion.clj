@@ -15,6 +15,8 @@
       (.setPassword o p))
     (when-let [i (:keep-alive-interval m)]
       (.setKeepAliveInterval o i))
+    (when-let [b (:clean-session m)]
+      (.setCleanSession o b))
     o))
 
 (defprotocol MessageSource
