@@ -22,6 +22,13 @@
       (is (mh/connected? c))
       (mh/disconnect c))))
 
+(deftest test-connection-with-clean-session
+  (dotimes [i 50]
+    (let [id (format "mh.tests-%d" i)
+          c  (mh/connect "tcp://127.0.0.1:1883" id {:clean-session true})]
+      (is (mh/connected? c))
+      (mh/disconnect-and-close c))))
+
 
 (deftest test-publishing-empty-messages
   (let [c (mh/connect "tcp://127.0.0.1:1883" "mh.tests-1")]
@@ -181,11 +188,3 @@
     (dotimes [i 1000]
       (mh/publish c "mh.qos.topic1" "hello" 1))
     (mh/disconnect c)))
-
-(when-not ci?
-  (deftest test-publishing-messages-with-qos-2
-    (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
-      (is (mh/connected? c))
-      (dotimes [i 1000]
-        (mh/publish c "mh.qos.topic1" "hello" 2))
-      (mh/disconnect c))))
