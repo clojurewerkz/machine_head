@@ -44,8 +44,9 @@
      (.close client)))
 
 (defn ^String generate-id
-  "Generates a client id"
-  "Take the last 23 bytes until the Paho bug that enables the generation of long ids is resolved"
+  "Generates a client id.
+
+   Limits client id to 23 bytes, per MQTT spec"
   []
   (let [id (MqttClient/generateClientId)]
     (apply str (take-last 23 id))))
