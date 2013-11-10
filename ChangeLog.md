@@ -1,3 +1,16 @@
+## Changes Between 1.0.0-beta3 and 1.0.0-beta4
+
+### Client ID Limit
+
+MQTT spec dictates that client [ID's should be limited to
+23 bytes](http://publib.boulder.ibm.com/infocenter/wmqv7/v7r0/index.jsp?topic=%2Fcom.ibm.mq.amqtat.doc%2Ftt60310_.htm). Eclipse Paho client generator [can produce ID's
+longer than that](https://bugs.eclipse.org/bugs/show_bug.cgi?id=404378).
+
+Machine Head now will limit ID length to the last 23 bytes.
+
+Contributed by Yodit Stanton.
+
+
 ## Changes Between 1.0.0-beta2 and 1.0.0-beta3
 
 ### Clean Session Support
