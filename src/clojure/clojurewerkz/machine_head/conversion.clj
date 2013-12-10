@@ -17,6 +17,12 @@
       (.setKeepAliveInterval o i))
     (when-let [b (:clean-session m)]
       (.setCleanSession o b))
+    (when-let [will (:will m)]
+      (.setWill ^MqttConnectOptions o
+                ^String (get will :topic)
+                ^bytes (get will :payload (byte-array 0))
+                ^int (get will :qos 0)
+                ^boolean (get will :retain false)))
     o))
 
 (defprotocol MessageSource
