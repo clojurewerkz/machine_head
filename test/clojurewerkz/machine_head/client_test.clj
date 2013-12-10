@@ -29,6 +29,14 @@
       (is (mh/connected? c))
       (mh/disconnect-and-close c))))
 
+(deftest test-connection-with-last-will
+  (dotimes [i 50]
+    (let [id (format "mh.tests-%d" i)
+          w  {:topic "lw-topic" :payload (.getBytes "last will") :qos 0 :retain false}
+          c  (mh/connect "tcp://127.0.0.1:1883" id {:clean-session true :will w})]
+      (is (mh/connected? c))
+      (mh/disconnect-and-close c))))
+
 
 (deftest test-publishing-empty-messages
   (let [c (mh/connect "tcp://127.0.0.1:1883" "mh.tests-1")]
