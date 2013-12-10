@@ -1,3 +1,20 @@
+## Changes Between 1.0.0-beta4 and 1.0.0-beta5
+
+### Last Will and Testament
+
+Machine Head now supports providing client last will and testament:
+
+``` clojure
+(require '[clojurewerkz.machine-head.client :as mh])
+
+(let [will {:topic "lw-topic" :payload (.getBytes "last will") :qos 0 :retain false}]
+  (mh/connect "" (mh/generate-id) {:will will}))
+```
+
+Contributed by Paul Bellamy.
+
+
+
 ## Changes Between 1.0.0-beta3 and 1.0.0-beta4
 
 ### Client ID Limit
