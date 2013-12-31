@@ -131,3 +131,7 @@ Copyright (C) 2014 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team.
 
 Double licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html) (the same as Clojure) or
 the [Apache Public License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/clojurewerkz/machine_head/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
