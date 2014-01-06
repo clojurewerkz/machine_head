@@ -15,8 +15,8 @@
       (.setPassword o p))
     (when-let [i (:keep-alive-interval m)]
       (.setKeepAliveInterval o i))
-    (when-let [b (:clean-session m)]
-      (.setCleanSession o b))
+    (when-not (nil? (:clean-session m))
+      (.setCleanSession o (:clean-session m)))
     (when-let [will (:will m)]
       (.setWill ^MqttConnectOptions o
                 ^String (get will :topic)
