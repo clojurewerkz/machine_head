@@ -1,3 +1,12 @@
+## Changes Between 1.0.0-beta5 and 1.0.0-beta6
+
+### :clean-session Accepts false
+
+It is now possible to set `:clean-session` to `false.
+
+Contributed by Martin Trojer.
+
+
 ## Changes Between 1.0.0-beta4 and 1.0.0-beta5
 
 ### Last Will and Testament
