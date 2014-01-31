@@ -15,7 +15,12 @@
      (MqttClient. uri client-id persister)))
 
 (defn ^IMqttClient connect
-  "Instantiates a new client and connects to MQTT broker."
+  "Instantiates a new client and connects to MQTT broker.
+
+   Options:
+
+    * :username (string)
+    * :password (string or char array)"
   ([^String uri ^String client-id]
      (doto (prepare uri client-id)
        .connect))
