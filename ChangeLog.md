@@ -1,3 +1,13 @@
+## Changes Between 1.0.0-beta6 and 1.0.0-beta7
+
+### Retain Default Change
+
+When publishing, `retain` now defaults to `false`,
+which is a much more sensible default.
+
+Contributed by Martin Trojer.
+
+
 ## Changes Between 1.0.0-beta5 and 1.0.0-beta6
 
 ### :clean-session Accepts false
