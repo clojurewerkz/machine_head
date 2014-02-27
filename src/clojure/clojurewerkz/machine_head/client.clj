@@ -66,7 +66,7 @@
   ([^IMqttClient client ^String topic payload]
      (.publish client topic (cnv/to-message payload)))
   ([^IMqttClient client ^String topic payload qos]
-     (.publish client topic ^bytes (to-byte-array payload) qos true))
+     (.publish client topic ^bytes (to-byte-array payload) qos false))
   ([^IMqttClient client ^String topic payload qos retained?]
      (.publish client topic ^bytes (to-byte-array payload) qos retained?)))
 
