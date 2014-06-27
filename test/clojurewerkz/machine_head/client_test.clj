@@ -29,6 +29,13 @@
       (is (mh/connected? c))
       (mh/disconnect-and-close c))))
 
+(deftest test-connection-with-connection-timeout
+  (dotimes [i 50]
+    (let [id (format "mh.tests-%d" i)
+          c  (mh/connect "tcp://127.0.0.1:1883" id {:connection-timeout 10})]
+      (is (mh/connected? c))
+      (mh/disconnect-and-close c))))
+
 (deftest test-connection-with-last-will
   (dotimes [i 50]
     (let [id (format "mh.tests-%d" i)
