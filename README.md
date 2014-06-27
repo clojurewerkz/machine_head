@@ -1,4 +1,4 @@
-# Machine Head, a Clojure MQTT Client
+ # Machine Head, a Clojure MQTT Client
 
 Machine Head is a [Clojure MQTT client](http://clojuremqtt.info).
 
@@ -14,8 +14,7 @@ Machine Head is a [Clojure MQTT client](http://clojuremqtt.info).
 
 ## Community
 
-[Machine Head has a mailing
-list](https://groups.google.com/forum/#!forum/clojure-mqtt). Feel free
+[Machine Head has a mailing list](https://groups.google.com/forum/#!forum/clojure-mqtt). Feel free
 to join it and ask any questions you may have.
 
 To subscribe for announcements of releases, important changes and so on, please follow [@ClojureWerkz](https://twitter.com/#!/clojurewerkz) on Twitter.
@@ -49,7 +48,7 @@ definition to your `pom.xml`:
 
 With Leiningen:
 
-    [clojurewerkz/machine_head "1.0.0-beta7"]
+    [clojurewerkz/machine_head "1.0.0-beta8"]
 
 
 With Maven:
@@ -57,7 +56,7 @@ With Maven:
     <dependency>
       <groupId>clojurewerkz</groupId>
       <artifactId>machine_head</artifactId>
-      <version>1.0.0-beta7</version>
+      <version>1.0.0-beta8</version>
     </dependency>
 
 
