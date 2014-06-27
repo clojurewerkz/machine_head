@@ -65,6 +65,22 @@
     (is (= 100 (.get i)))
     (mh/disconnect c)))
 
+(deftest test-basic-topic-subscription-with-multiple-consumers
+  (let [c1 (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))
+        c2 (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))
+        i  (AtomicInteger.)
+        f  (fn [^String topic meta ^bytes payload]
+             (.incrementAndGet i))]
+    (mh/subscribe c1 ["mh.topic"] f)
+    (mh/subscribe c2 ["mh.topic"] f)
+    (dotimes [_ 100]
+      (mh/publish c1 "mh.topic" "payload"))
+    (Thread/sleep 250)
+    (is (= 200 (.get i)))
+    (mh/disconnect c1)
+    (mh/disconnect c2)))
+
+
 (deftest test-topic-subscription-with-multi-segment-wildcard
   (let [id (mh/generate-id)
         c  (mh/connect "tcp://127.0.0.1:1883" id)
