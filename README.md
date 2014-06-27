@@ -81,8 +81,7 @@ in a separate repository.
 
 ## Supported MQTT Broker Implementations
 
-Machine Head is tested against [RabbitMQ with MQTT
-plugin](http://www.rabbitmq.com/mqtt.html) and
+Machine Head is tested against [RabbitMQ with MQTT plugin](http://www.rabbitmq.com/mqtt.html) and
 [Mosquitto](http://mosquitto.org/).
 
 
