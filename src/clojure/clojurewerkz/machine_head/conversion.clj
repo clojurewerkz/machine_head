@@ -16,7 +16,7 @@
     (when-let [i (:keep-alive-interval m)]
       (.setKeepAliveInterval o i))
     (when-let [t (:connection-timeout m)]
-      (.setConnectionTimeout o t))
+      (.setConnectionTimeout o (Integer/valueOf t)))
     (when-not (nil? (:clean-session m))
       (.setCleanSession o (:clean-session m)))
     (when-let [will (:will m)]
