@@ -88,7 +88,7 @@
 
    Provided handler function will be invoked with 3 arguments:
 
-    * Topic message was received on
+    * The topic message was received on
     * Immutable map of message metadata
     * Byte array of message payload
 
@@ -96,19 +96,21 @@
 
     * :on-delivery-complete:
     * :on-connection-lost: function that will be called when connection
-                          to broker is lost
-    * :qos Optional QoS levels for the topic supplied.
-           QoS level must be an int (from 0 to 2) or a collection of ints if many topics were given."
-  ([^IMqttClient client topics handler-fn]
-     (subscribe client topics handler-fn {}))
-  ([^IMqttClient client topics handler-fn {:keys [on-connection-lost
-                                                  on-delivery-complete
-                                                  qos]}]
-     (let [cb (reify-mqtt-callback handler-fn on-delivery-complete on-connection-lost)]
+                          to broker is lost"
+  ([^IMqttClient client topics-and-qos handler-fn]
+     (subscribe client topics-and-qos handler-fn {}))
+  ([^IMqttClient client topics-and-qos handler-fn {:keys [on-connection-lost
+                                                  on-delivery-complete]}]
+     ;; ensure topics and qos are in the same order,
+     ;; even though we do not require the user to pass an
+     ;; order-preserving map. MK.
+     (let [topics (keys topics-and-qos)
+           qos    (map (fn [^String s]
+                         (get topics-and-qos s))
+                       topics)
+           cb     (reify-mqtt-callback handler-fn on-delivery-complete on-connection-lost)]
        (.setCallback client cb)
-       (if qos
-         (.subscribe client (cnv/->topic-array topics) (cnv/->int-array qos))
-         (.subscribe client (cnv/->topic-array topics)))
+       (.subscribe client (cnv/->topic-array topics) (cnv/->int-array qos))
        client)))
 
 (defn unsubscribe
