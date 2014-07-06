@@ -1,3 +1,28 @@
+## Changes Between 1.0.0-beta8 and 1.0.0-beta9
+
+### Subscription API Change
+
+Previously `clojurewerkz.machine-head.client/subscribe` accepted
+a list of topics and optionally a list of QoS levels:
+
+``` clojure
+(mh/subscribe c ["mh/topics/#" "mh/alt.topics/+"]
+                  (fn [^String topic meta ^bytes payload])
+                  {:qos [0 1]})
+```
+
+This turns out to be a fairly confusing API.
+
+We've changed it to accept a map of topics to QoS levels. While
+a bit more verbose, this API make it very clear what topic will use
+what QoS:
+
+``` clojure
+(mh/subscribe c {"mh/topics/#" 0 "mh/alt.topics/+" 1}
+                  (fn [^String topic meta ^bytes payload] ))
+```
+
+
 ## Changes Between 1.0.0-beta7 and 1.0.0-beta8
 
 ### Clojure 1.6 By Default
