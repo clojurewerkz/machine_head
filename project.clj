@@ -2,7 +2,7 @@
   :description "Clojure MQTT client"
   :dependencies [[org.clojure/clojure          "1.6.0"]
                  [org.eclipse.paho/mqtt-client "0.4.0"]
-                 [clojurewerkz/support         "1.0.0"]]
+                 [clojurewerkz/support         "1.1.0"]]
   :profiles {:1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.7 {:dependencies [[org.clojure/clojure "1.7.0-alpha4"]]}
              :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
