@@ -87,7 +87,7 @@ Machine Head is tested against [RabbitMQ with MQTT plugin](http://www.rabbitmq.c
 
 ## Supported Clojure Versions
 
-Machine Head requires Clojure 1.4+.
+Machine Head requires Clojure 1.6+.
 
 
 ## Continuous Integration Status
