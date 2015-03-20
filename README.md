@@ -48,7 +48,7 @@ definition to your `pom.xml`:
 
 With Leiningen:
 
-    [clojurewerkz/machine_head "1.0.0-beta8"]
+    [clojurewerkz/machine_head "1.0.0-beta9"]
 
 
 With Maven:
@@ -56,7 +56,7 @@ With Maven:
     <dependency>
       <groupId>clojurewerkz</groupId>
       <artifactId>machine_head</artifactId>
-      <version>1.0.0-beta8</version>
+      <version>1.0.0-beta9</version>
     </dependency>
 
 
