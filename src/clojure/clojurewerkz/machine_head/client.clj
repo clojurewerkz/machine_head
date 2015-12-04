@@ -20,7 +20,11 @@
    Options:
 
     * :username (string)
-    * :password (string or char array)"
+    * :password (string or char array)
+    * :keep-alive-interval (int)
+    * :connection-timeout (int)
+    * :clean-session (bool)
+    * :will {:topic :payload :qos :retain}"
   ([^String uri ^String client-id]
      (doto (prepare uri client-id)
        .connect))
