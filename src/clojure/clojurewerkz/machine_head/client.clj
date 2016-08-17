@@ -3,7 +3,7 @@
   (:require [clojurewerkz.machine-head.conversion :as cnv]
             [clojurewerkz.support.bytes :refer [to-byte-array]])
   (:import [org.eclipse.paho.client.mqttv3
-            IMqttClient MqttClient MqttCallback
+            IMqttClient MqttClient MqttCallbackExtended
             MqttMessage IMqttDeliveryToken MqttClientPersistence
             IMqttDeliveryToken]))
 
@@ -25,7 +25,8 @@
     * :connection-timeout (int)
     * :clean-session (bool)
     * :socket-factory (SocketFactory)
-    * :will {:topic :payload :qos :retain}"
+    * :will {:topic :payload :qos :retain}
+    * :auto-reconnect (bool)"
   ([^String uri ^String client-id]
      (doto (prepare uri client-id)
        .connect))
@@ -75,14 +76,17 @@
   ([^IMqttClient client ^String topic payload qos retained?]
      (.publish client topic ^bytes (to-byte-array payload) qos retained?)))
 
-(defn ^:private ^MqttCallback reify-mqtt-callback
-  [delivery-fn delivery-complete-fn connection-lost-fn]
-  (reify MqttCallback
+(defn ^:private ^MqttCallbackExtended reify-mqtt-callback
+  [client delivery-fn delivery-complete-fn connection-lost-fn on-connect-complete]
+  (reify MqttCallbackExtended
     (^void messageArrived [this ^String topic ^MqttMessage msg]
       (delivery-fn topic (cnv/message->metadata msg) (.getPayload msg)))
     (^void connectionLost [this ^Throwable reason]
       (when connection-lost-fn
         (connection-lost-fn ^Throwable reason)))
+    (^void connectComplete [this ^boolean reconnect ^String serverURI]
+      (when on-connect-complete
+        (on-connect-complete client reconnect serverURI)))
     (^void deliveryComplete [this ^IMqttDeliveryToken token]
       (when delivery-complete-fn
         (delivery-complete-fn ^IMqttDeliveryToken token)))))
@@ -101,11 +105,13 @@
 
     * :on-delivery-complete:
     * :on-connection-lost: function that will be called when connection
-                          to broker is lost"
+                          to broker is lost
+    * :on-connect-complete: function that will be called after connection to broker"
   ([^IMqttClient client topics-and-qos handler-fn]
      (subscribe client topics-and-qos handler-fn {}))
   ([^IMqttClient client topics-and-qos handler-fn {:keys [on-connection-lost
-                                                  on-delivery-complete]}]
+                                                          on-delivery-complete
+                                                          on-connect-complete]}]
      ;; ensure topics and qos are in the same order,
      ;; even though we do not require the user to pass an
      ;; order-preserving map. MK.
@@ -113,7 +119,12 @@
            qos    (map (fn [^String s]
                          (get topics-and-qos s))
                        topics)
-           cb     (reify-mqtt-callback handler-fn on-delivery-complete on-connection-lost)]
+           cb     (reify-mqtt-callback
+                   client
+                   handler-fn
+                   on-delivery-complete
+                   on-connection-lost
+                   on-connect-complete)]
        (.setCallback client cb)
        (.subscribe client (cnv/->topic-array topics) (cnv/->int-array qos))
        client)))
