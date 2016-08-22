@@ -1,7 +1,7 @@
 (defproject clojurewerkz/machine_head "1.0.0-beta10-SNAPSHOT"
   :description "Clojure MQTT client"
-  :dependencies [[org.clojure/clojure          "1.6.0"]
-                 [org.eclipse.paho/mqtt-client "0.4.0"]
+  :dependencies [[org.clojure/clojure          "1.8.0"]
+                 [org.eclipse.paho/org.eclipse.paho.client.mqttv3 "1.0.2"]
                  [clojurewerkz/support         "1.1.0"]]
   :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :master {:dependencies [[org.clojure/clojure "1.8.0-master-SNAPSHOT"]]}
