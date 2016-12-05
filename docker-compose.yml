@@ -1,0 +1,9 @@
+version: '2'
+services:
+  rabbitmq4test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-rabbitmq
+    hostname: test-rabbit
+    expose: [1883]
+    ports: ["1883:1883"]
