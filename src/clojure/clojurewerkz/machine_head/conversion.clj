@@ -8,26 +8,29 @@
 
 (defn ->connect-options
   [m]
-  (let [o (MqttConnectOptions.)]
-    (when-let [u (:username m)]
-      (.setUserName o u))
-    (when-let [p (to-char-array (:password m))]
-      (.setPassword o p))
-    (when-let [i (:keep-alive-interval m)]
-      (.setKeepAliveInterval o i))
-    (when-let [t (:connection-timeout m)]
-      (.setConnectionTimeout o (Integer/valueOf t)))
-    (when-not (nil? (:clean-session m))
-      (.setCleanSession o (:clean-session m)))
-    (when-let [f (:socket-factory m)]
-      (.setSocketFactory o f))
-    (when-let [will (:will m)]
-      (.setWill ^MqttConnectOptions o
-                ^String (get will :topic)
-                ^bytes (get will :payload (byte-array 0))
-                (Integer/valueOf (get will :qos 0))
-                ^boolean (get will :retain false)))
-    o))
+  {:pre [(or (map? m) (instance? MqttConnectOptions m))]}
+  (if (instance? MqttConnectOptions m)
+    m
+    (let [o (MqttConnectOptions.)]
+     (when-let [u (:username m)]
+       (.setUserName o u))
+     (when-let [p (to-char-array (:password m))]
+       (.setPassword o p))
+     (when-let [i (:keep-alive-interval m)]
+       (.setKeepAliveInterval o i))
+     (when-let [t (:connection-timeout m)]
+       (.setConnectionTimeout o (Integer/valueOf t)))
+     (when-not (nil? (:clean-session m))
+       (.setCleanSession o (:clean-session m)))
+     (when-let [f (:socket-factory m)]
+       (.setSocketFactory o f))
+     (when-let [will (:will m)]
+       (.setWill ^MqttConnectOptions o
+                 ^String (get will :topic)
+                 ^bytes (get will :payload (byte-array 0))
+                 (Integer/valueOf (get will :qos 0))
+                 ^boolean (get will :retain false)))
+     o)))
 
 (defprotocol MessageSource
   (^MqttMessage to-message [input] "Instantiates an MQTT message from input"))
