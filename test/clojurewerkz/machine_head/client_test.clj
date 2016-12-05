@@ -1,4 +1,7 @@
 (ns clojurewerkz.machine-head.client-test
+  "BEWARE: Start RabbitMQ before running the rests, either locally or via Docker
+   (docker-compose build; docker-compose up)
+  "
   (:require [clojurewerkz.machine-head.client     :as mh]
             [clojurewerkz.machine-head.durability :as md]
             [clojure.test :refer :all])
