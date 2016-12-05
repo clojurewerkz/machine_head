@@ -19,6 +19,8 @@
       (.setConnectionTimeout o (Integer/valueOf t)))
     (when-not (nil? (:clean-session m))
       (.setCleanSession o (:clean-session m)))
+    (when-let [f (:socket-factory m)]
+      (.setSocketFactory o f))
     (when-let [will (:will m)]
       (.setWill ^MqttConnectOptions o
                 ^String (get will :topic)
