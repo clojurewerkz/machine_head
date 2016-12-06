@@ -17,13 +17,14 @@
 (defn ^IMqttClient connect
   "Instantiates a new client and connects to MQTT broker.
 
-   Options:
+   Options: either a map with any of the keys bellow or an instance of MqttConnectOptions
 
     * :username (string)
     * :password (string or char array)
     * :keep-alive-interval (int)
     * :connection-timeout (int)
     * :clean-session (bool)
+    * :socket-factory (SocketFactory)
     * :will {:topic :payload :qos :retain}"
   ([^String uri ^String client-id]
      (doto (prepare uri client-id)

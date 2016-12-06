@@ -6,7 +6,8 @@
             [clojurewerkz.machine-head.durability :as md]
             [clojure.test :refer :all])
   (:import java.util.concurrent.atomic.AtomicInteger
-           org.eclipse.paho.client.mqttv3.persist.MemoryPersistence))
+           org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+           (org.eclipse.paho.client.mqttv3 MqttConnectOptions)))
 
 (def ci? (System/getenv "CI"))
 
@@ -21,9 +22,24 @@
   (dotimes [i 10]
     (let [id  (format "mh.tests-%d" i)
           p   (md/new-memory-persister)
-          c   (mh/connect "tcp://127.0.0.1:1883" id p)]
+          c   (mh/connect "tcp://127.0.0.1:1883" id p {})]
       (is (mh/connected? c))
       (mh/disconnect c))))
+
+(deftest test-connection-with-provided-options
+  (dotimes [i 1]
+    (let [called? (atom false)
+          id  (format "mh.tests-%d" i)
+          p   (md/new-memory-persister)
+          opt   (proxy
+                  [MqttConnectOptions] []
+                  (getConnectionTimeout []
+                    (reset! called? true)
+                    (proxy-super getConnectionTimeout)))
+          c   (mh/connect "tcp://127.0.0.1:1883" id p opt)]
+      (is (mh/connected? c))
+      (is (true? @called?))
+      (mh/disconnect-and-close c))))
 
 (deftest test-connection-with-clean-session
   (dotimes [i 50]
