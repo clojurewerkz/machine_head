@@ -24,7 +24,6 @@
     * :keep-alive-interval (int)
     * :connection-timeout (int)
     * :clean-session (bool)
-    * :socket-factory (SocketFactory)
     * :will {:topic :payload :qos :retain}
     * :auto-reconnect (bool)"
   ([^String uri ^String client-id]
