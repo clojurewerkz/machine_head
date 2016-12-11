@@ -1,9 +1,15 @@
 (ns clojurewerkz.machine-head.client-test
+  "BEWARE: Start RabbitMQ before running the rests, either locally or via Docker
+   (docker-compose build; docker-compose up)
+  "
   (:require [clojurewerkz.machine-head.client     :as mh]
             [clojurewerkz.machine-head.durability :as md]
             [clojure.test :refer :all])
   (:import java.util.concurrent.atomic.AtomicInteger
-           org.eclipse.paho.client.mqttv3.persist.MemoryPersistence))
+           org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+           (org.eclipse.paho.client.mqttv3 MqttConnectOptions)
+           (javax.net SocketFactory)
+           (java.net InetAddress)))
 
 (def ci? (System/getenv "CI"))
 
@@ -18,9 +24,23 @@
   (dotimes [i 10]
     (let [id  (format "mh.tests-%d" i)
           p   (md/new-memory-persister)
-          c   (mh/connect "tcp://127.0.0.1:1883" id p)]
+          c   (mh/connect "tcp://127.0.0.1:1883" id p {})]
       (is (mh/connected? c))
       (mh/disconnect c))))
+
+(deftest test-connection-with-provided-options
+  (dotimes [i 1]
+    (let [called? (atom false)
+          id  (format "mh.tests-%d" i)
+          opt   (proxy
+                  [MqttConnectOptions] []
+                  (getConnectionTimeout []
+                    (reset! called? true)
+                    (proxy-super getConnectionTimeout)))
+          c   (mh/connect "tcp://127.0.0.1:1883" id opt)]
+      (is (mh/connected? c))
+      (is (true? @called?))
+      (mh/disconnect-and-close c))))
 
 (deftest test-connection-with-clean-session
   (dotimes [i 50]
@@ -42,6 +62,25 @@
           w  {:topic "lw-topic" :payload (.getBytes "last will") :qos 0 :retain false}
           c  (mh/connect "tcp://127.0.0.1:1883" id {:clean-session true :will w})]
       (is (mh/connected? c))
+      (mh/disconnect-and-close c))))
+
+(deftest test-connection-with-socket-factory
+  (dotimes [i 1]
+    (let [called? (atom false)
+          id  (format "mh.tests-%d" i)
+          default (SocketFactory/getDefault)
+          f   (proxy [SocketFactory] []
+                  (createSocket
+                    ([]
+                     (reset! called? true) (.createSocket default))
+                    ([host port]
+                     (reset! called? true) (.createSocket default host port))
+                    ([address port localAddress localPort]
+                     (reset! called? true) (.createSocket default address port localAddress localPort))
+                    ))
+          c   (mh/connect "tcp://127.0.0.1:1883" id {:socket-factory f})]
+      (is (mh/connected? c))
+      (is (true? @called?))
       (mh/disconnect-and-close c))))
 
 
