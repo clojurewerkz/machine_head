@@ -30,6 +30,8 @@
                  ^bytes (get will :payload (byte-array 0))
                  (Integer/valueOf (get will :qos 0))
                  ^boolean (get will :retain false)))
+     (when-let [r (:auto-reconnect m)]
+       (.setAutomaticReconnect o r))
      o)))
 
 (defprotocol MessageSource
