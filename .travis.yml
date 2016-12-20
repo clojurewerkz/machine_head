@@ -5,5 +5,5 @@ services:
 before_script: ./bin/ci/before_script.sh
 script: lein2 all test
 jdk:
-  - oraclejdk7
+  - openjdk7
   - oraclejdk8
