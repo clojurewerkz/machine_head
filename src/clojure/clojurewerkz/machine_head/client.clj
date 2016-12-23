@@ -5,7 +5,7 @@
   (:import [org.eclipse.paho.client.mqttv3
             IMqttClient MqttClient MqttCallbackExtended
             MqttMessage IMqttDeliveryToken MqttClientPersistence
-            IMqttDeliveryToken]))
+            IMqttDeliveryToken IMqttMessageListener]))
 
 (defn ^IMqttClient prepare
   "Instantiates a new client"
@@ -91,6 +91,12 @@
       (when delivery-complete-fn
         (delivery-complete-fn ^IMqttDeliveryToken token)))))
 
+(defn ^:private ^IMqttMessageListener reify-message-listener
+  [delivery-fn]
+  (reify IMqttMessageListener
+    (^void messageArrived [this ^String topic ^MqttMessage msg]
+      (delivery-fn topic (cnv/message->metadata msg) (.getPayload msg)))))
+
 (defn subscribe
   "Subscribes to one or multiple topics (if `topics` is a collection
    or sequence).
@@ -101,33 +107,25 @@
     * Immutable map of message metadata
     * Byte array of message payload
 
-   Options:
-
-    * :on-delivery-complete:
-    * :on-connection-lost: function that will be called when connection
-                          to broker is lost
-    * :on-connect-complete: function that will be called after connection to broker"
-  ([^IMqttClient client topics-and-qos handler-fn]
-     (subscribe client topics-and-qos handler-fn {}))
-  ([^IMqttClient client topics-and-qos handler-fn {:keys [on-connection-lost
-                                                          on-delivery-complete
-                                                          on-connect-complete]}]
-     ;; ensure topics and qos are in the same order,
-     ;; even though we do not require the user to pass an
-     ;; order-preserving map. MK.
-     (let [topics (keys topics-and-qos)
-           qos    (map (fn [^String s]
-                         (get topics-and-qos s))
-                       topics)
-           cb     (reify-mqtt-callback
-                   client
-                   handler-fn
-                   on-delivery-complete
-                   on-connection-lost
-                   on-connect-complete)]
-       (.setCallback client cb)
-       (.subscribe client (cnv/->topic-array topics) (cnv/->int-array qos))
-       client)))
+   BEWARE: Don't use dots in topic names with RabbitMQ - see rabbitmq-mqtt/issues/58"
+  [^IMqttClient client topics-and-qos handler-fn]
+  ;; ensure topics and qos are in the same order,
+  ;; even though we do not require the user to pass an
+  ;; order-preserving map. MK.
+  (let [topics (keys topics-and-qos)
+        qos (map (fn [^String s]
+                   (get topics-and-qos s))
+                 topics)]
+    (.subscribe
+      client
+      (cnv/->topic-array topics)
+      (cnv/->int-array qos)
+      ;#_^"[Lorg.eclipse.paho.client.mqttv3.IMqttMessageListener;"
+      (into-array
+        IMqttMessageListener
+        (repeat
+          (count topics)
+          (reify-message-listener handler-fn))))))
 
 (defn unsubscribe
   "Unsubscribes from one or multiple topics (if `topics` is a collection

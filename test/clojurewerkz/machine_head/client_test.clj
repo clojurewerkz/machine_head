@@ -6,6 +6,7 @@
             [clojurewerkz.machine-head.durability :as md]
             [clojure.test :refer :all])
   (:import java.util.concurrent.atomic.AtomicInteger
+           java.util.concurrent.CountDownLatch
            (org.eclipse.paho.client.mqttv3 MqttConnectOptions)
            (javax.net SocketFactory)
            (java.util.concurrent TimeUnit)))
@@ -175,6 +176,30 @@
     (Thread/sleep 100)
     (is (= 110 (.get i)))
     (mh/disconnect c)))
+
+(deftest test-different-subscriptions-different-handlers
+  (let [id (mh/generate-id)
+        c  (mh/connect "tcp://127.0.0.1:1883" id)
+        countDownOne (CountDownLatch. 50)
+        countDownTwo (CountDownLatch. 60)]
+    (mh/subscribe c {"mh/topic1" 0}
+                  (fn [^String topic meta ^bytes payload]
+                    (.countDown countDownOne)))
+    (mh/subscribe c {"mh/topic2" 0}
+                  (fn [^String topic meta ^bytes payload]
+                    (.countDown countDownTwo)))
+    (is (mh/connected? c))
+    (dotimes [_ 50]
+      (mh/publish c "mh/topic1" "payload1"))
+    (dotimes [_ 60]
+      (mh/publish c "mh/topic2" "payload2"))
+    (.await countDownOne 100 TimeUnit/MILLISECONDS)
+    (.await countDownTwo 100 TimeUnit/MILLISECONDS)
+    (is (= [0 0] [(.getCount countDownOne) (.getCount countDownTwo)]))
+    (mh/disconnect c)))
+
+;; test-connection-with-on-message   ; TODO
+;; test-connection-with-listeners   ; TODO
 
 ;; very simplistic test, does not try to demonstrate
 ;; how QoS actually works. MK.
