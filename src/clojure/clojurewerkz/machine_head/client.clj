@@ -7,17 +7,32 @@
             MqttMessage IMqttDeliveryToken MqttClientPersistence
             IMqttDeliveryToken IMqttMessageListener]))
 
+(declare reify-mqtt-callback)
+(declare generate-id)
+
 (defn ^IMqttClient prepare
   "Instantiates a new client"
-  ([^String uri ^String client-id]
-     (MqttClient. uri client-id))
-  ([^String uri ^String client-id ^MqttClientPersistence persister]
-     (MqttClient. uri client-id persister)))
+  [^String uri ^String client-id ^MqttClientPersistence persister]
+  (MqttClient. uri client-id persister))
 
 (defn ^IMqttClient connect
   "Instantiates a new client and connects to MQTT broker.
 
-   Options: either a map with any of the keys bellow or an instance of MqttConnectOptions
+   Options (all keys are optional):
+
+    * :client-id: a client identifier that is unique on the server being connected to
+    * :persister: the persistence class to use to store in-flight message; if bil then the
+       default persistence mechanism is used
+    * :opts: see Mqtt connect options below
+    * :on-connect-complete: function called after connection to broker
+    * :on-connection-lost: function called when connection to broker is lost
+    * :on-delivery-complete: function called when sending and delivery for a message has
+       been completed (depending on its QoS), and all acknowledgments have been received
+    * :on-unhandled-message: function called when a message has arrived and hasn't been handled
+       by a per subscription handler; invoked with 3 arguments:
+       the topic message was received on, an immutable map of message metadata, a byte array of message payload
+
+    Mqtt connect options: either a map with any of the keys bellow or an instance of MqttConnectOptions
 
     * :username (string)
     * :password (string or char array)
@@ -27,15 +42,29 @@
     * :socket-factory (SocketFactory)
     * :will {:topic :payload :qos :retain}
     * :auto-reconnect (bool)"
-  ([^String uri ^String client-id]
-     (doto (prepare uri client-id)
-       .connect))
-  ([^String uri ^String client-id opts]
-     (doto (prepare uri client-id)
-       (.connect (cnv/->connect-options opts))))
-  ([^String uri ^String client-id ^MqttClientPersistence persister opts]
-     (doto (prepare uri client-id persister)
-       (.connect (cnv/->connect-options opts)))))
+  ([^String uri]
+    (connect uri {}))
+  ([^String uri
+    {:keys [^String client-id
+            ^MqttClientPersistence persister
+            opts
+            on-delivery-complete
+            on-connection-lost
+            on-connect-complete
+            on-unhandled-message]
+     :or {client-id (generate-id)
+          persister nil
+          opts {}}}]
+   (let [client (prepare uri client-id persister)
+         cb (reify-mqtt-callback
+              client
+              on-unhandled-message
+              on-delivery-complete
+              on-connection-lost
+              on-connect-complete)]
+     (.setCallback client cb)                               ;; we must set the callback BEFORE connecting
+     (.connect client (cnv/->connect-options opts))
+     client)))
 
 (defn disconnect
   "Disconnects from MQTT broker."
@@ -77,16 +106,17 @@
      (.publish client topic ^bytes (to-byte-array payload) qos retained?)))
 
 (defn ^:private ^MqttCallbackExtended reify-mqtt-callback
-  [client delivery-fn delivery-complete-fn connection-lost-fn on-connect-complete]
+  [client message-arrived-fn delivery-complete-fn connection-lost-fn on-connect-complete-fn]
   (reify MqttCallbackExtended
     (^void messageArrived [this ^String topic ^MqttMessage msg]
-      (delivery-fn topic (cnv/message->metadata msg) (.getPayload msg)))
+      (when message-arrived-fn
+        (message-arrived-fn topic (cnv/message->metadata msg) (.getPayload msg))))
     (^void connectionLost [this ^Throwable reason]
       (when connection-lost-fn
         (connection-lost-fn ^Throwable reason)))
     (^void connectComplete [this ^boolean reconnect ^String serverURI]
-      (when on-connect-complete
-        (on-connect-complete client reconnect serverURI)))
+      (when on-connect-complete-fn
+        (on-connect-complete-fn client reconnect serverURI)))
     (^void deliveryComplete [this ^IMqttDeliveryToken token]
       (when delivery-complete-fn
         (delivery-complete-fn ^IMqttDeliveryToken token)))))

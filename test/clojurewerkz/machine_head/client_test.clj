@@ -16,7 +16,7 @@
 (deftest test-connection
   (dotimes [i 50]
     (let [id (format "mh/tests-%d" i)
-          c  (mh/connect "tcp://127.0.0.1:1883" id)]
+          c  (mh/connect "tcp://127.0.0.1:1883")]
       (is (mh/connected? c))
       (mh/disconnect-and-close c))))
 
@@ -24,7 +24,7 @@
   (dotimes [i 10]
     (let [id  (format "mh/tests-%d" i)
           p   (md/new-memory-persister)
-          c   (mh/connect "tcp://127.0.0.1:1883" id p {})]
+          c   (mh/connect "tcp://127.0.0.1:1883" {:client-id id :persister p })]
       (is (mh/connected? c))
       (mh/disconnect c))))
 
@@ -37,7 +37,7 @@
                   (getConnectionTimeout []
                     (reset! called? true)
                     (proxy-super getConnectionTimeout)))
-          c   (mh/connect "tcp://127.0.0.1:1883" id opt)]
+          c   (mh/connect "tcp://127.0.0.1:1883" {:client-id id :opts opt})]
       (is (mh/connected? c))
       (is (true? @called?))
       (mh/disconnect-and-close c))))
@@ -45,14 +45,14 @@
 (deftest test-connection-with-clean-session
   (dotimes [i 50]
     (let [id (format "mh/tests-%d" i)
-          c  (mh/connect "tcp://127.0.0.1:1883" id {:clean-session true})]
+          c  (mh/connect "tcp://127.0.0.1:1883" {:client-id id :opts {:clean-session true}})]
       (is (mh/connected? c))
       (mh/disconnect-and-close c))))
 
 (deftest test-connection-with-connection-timeout
   (dotimes [i 50]
     (let [id (format "mh/tests-%d" i)
-          c  (mh/connect "tcp://127.0.0.1:1883" id {:connection-timeout 10})]
+          c  (mh/connect "tcp://127.0.0.1:1883" {:client-id id :opts {:connection-timeout 10}})]
       (is (mh/connected? c))
       (mh/disconnect-and-close c))))
 
@@ -60,7 +60,7 @@
   (dotimes [i 50]
     (let [id (format "mh/tests-%d" i)
           w  {:topic "lw-topic" :payload (.getBytes "last will") :qos 0 :retain false}
-          c  (mh/connect "tcp://127.0.0.1:1883" id {:clean-session true :will w})]
+          c  (mh/connect "tcp://127.0.0.1:1883" {:client-id id :opts {:clean-session true :will w}})]
       (is (mh/connected? c))
       (mh/disconnect-and-close c))))
 
@@ -78,29 +78,52 @@
                     ([address port localAddress localPort]
                      (reset! called? true) (.createSocket default address port localAddress localPort))
                     ))
-          c   (mh/connect "tcp://127.0.0.1:1883" id {:socket-factory f})]
+          c   (mh/connect "tcp://127.0.0.1:1883" {:client-id id :opts {:socket-factory f}})]
       (is (mh/connected? c))
       (is (true? @called?))
       (mh/disconnect-and-close c))))
 
+(deftest test-connection-with-handlers
+  (dotimes [_ 50]
+    (let [done (CountDownLatch. 3)
+          calls-log (atom {})
+          log-call (fn [key]
+                     (swap! calls-log assoc key true)
+                     (.countDown done))
+          c  (mh/connect
+               "tcp://127.0.0.1:1883"
+               {:on-connect-complete (fn [client reconnect uri] (log-call :on-connect-complete))
+                ;:on-connection-lost (fn [cause] (swap! calls-log assoc :on-connection-lost true)) ;; cannot be tested unless we can simulate conn. loss
+                :on-delivery-complete (fn [token] (log-call :on-delivery-complete))
+                :on-unhandled-message (fn [topic meta payload] (log-call :on-unhandled-message))})]
+      ; Subscribe to a topic but do not provide any handler so that the
+      ; default one will be invoked:
+      (.subscribe c "mh/topicWithoutHandler" 0)
+      (mh/publish c "mh/topicWithoutHandler" "hello!")
+      (.await done 1000 TimeUnit/MILLISECONDS)
+      (is (=
+            {:on-connect-complete true
+             :on-delivery-complete true
+             :on-unhandled-message true}
+            @calls-log))
+      (mh/disconnect-and-close c))))
 
 (deftest test-publishing-empty-messages
-  (let [c (mh/connect "tcp://127.0.0.1:1883" "mh/tests-1")]
+  (let [c (mh/connect "tcp://127.0.0.1:1883")]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh/topic1" nil))
     (mh/disconnect c)))
 
 (deftest test-publishing-messages
-  (let [c (mh/connect "tcp://127.0.0.1:1883" "mh/tests-1")]
+  (let [c (mh/connect "tcp://127.0.0.1:1883")]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh/topic1" "hello"))
     (mh/disconnect c)))
 
 (deftest test-basic-topic-subscription
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic" 0} (fn [^String topic meta ^bytes payload]
                                      (.incrementAndGet i)))
@@ -112,8 +135,8 @@
     (mh/disconnect c)))
 
 (deftest test-basic-topic-subscription-with-multiple-consumers
-  (let [c1 (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))
-        c2 (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))
+  (let [c1 (mh/connect "tcp://127.0.0.1:1883")
+        c2 (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)
         f  (fn [^String topic meta ^bytes payload]
              (.incrementAndGet i))
@@ -129,8 +152,7 @@
 
 
 (deftest test-topic-subscription-with-multi-segment-wildcard
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topics/#" 0}
                   (fn [^String topic meta ^bytes payload]
@@ -143,8 +165,7 @@
     (mh/disconnect c)))
 
 (deftest test-topic-subscription-with-single-segment-wildcard
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topics/+" 0} (fn [^String topic meta ^bytes payload]
                                         (.incrementAndGet i)))
@@ -162,8 +183,7 @@
     (mh/disconnect c)))
 
 (deftest test-multi-topic-subscription
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic1" 0 "mh/topic2" 0}
                   (fn [^String topic meta ^bytes payload]
@@ -178,8 +198,7 @@
     (mh/disconnect c)))
 
 (deftest test-different-subscriptions-different-handlers
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         countDownOne (CountDownLatch. 50)
         countDownTwo (CountDownLatch. 60)]
     (mh/subscribe c {"mh/topic1" 0}
@@ -198,14 +217,10 @@
     (is (= [0 0] [(.getCount countDownOne) (.getCount countDownTwo)]))
     (mh/disconnect c)))
 
-;; test-connection-with-on-message   ; TODO
-;; test-connection-with-listeners   ; TODO
-
 ;; very simplistic test, does not try to demonstrate
 ;; how QoS actually works. MK.
 (deftest test-basic-topic-subscription-with-qos
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic" 1}
                   (fn [^String topic meta ^bytes payload]
@@ -219,8 +234,7 @@
 
 
 (deftest test-multi-topic-subscription-with-qos
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic1" 0 "mh/topic3" 1}
                   (fn [^String topic meta ^bytes payload]
@@ -237,8 +251,7 @@
     (mh/disconnect c)))
 
 (deftest test-basic-topic-unsubscription
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/temp-topic" 0}
                   (fn [^String topic meta ^bytes payload]
@@ -252,8 +265,7 @@
 
 
 (deftest test-multi-topic-unsubscription
-  (let [id (mh/generate-id)
-        c  (mh/connect "tcp://127.0.0.1:1883" id)
+  (let [c  (mh/connect "tcp://127.0.0.1:1883")
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/temp-topic1" 0
                      "mh/temp-topic2" 0
@@ -275,14 +287,14 @@
 
 ;; does not demonstrate how QoS actually works. MK.
 (deftest test-publishing-messages-with-qos-0
-  (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
+  (let [c (mh/connect "tcp://127.0.0.1:1883")]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh/qos.topic1" "hello" 0))
     (mh/disconnect c)))
 
 (deftest test-publishing-messages-with-qos-1
-  (let [c (mh/connect "tcp://127.0.0.1:1883" (mh/generate-id))]
+  (let [c (mh/connect "tcp://127.0.0.1:1883")]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh/qos.topic1" "hello" 1))
