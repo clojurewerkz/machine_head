@@ -14,7 +14,7 @@
 (def ci? (System/getenv "CI"))
 
 (defn connect []
-  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-inflight 50000}}))
+  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-in-flight 50000}}))
 
 (deftest test-connection
   (dotimes [i 50]
@@ -186,7 +186,7 @@
     (mh/disconnect c)))
 
 (deftest test-multi-topic-subscription
-  (let [c  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-inflight 1000}})
+  (let [c  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-in-flight 1000}})
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic1" 0 "mh/topic2" 0}
                   (fn [^String topic meta ^bytes payload]
@@ -201,7 +201,7 @@
     (mh/disconnect c)))
 
 (deftest test-different-subscriptions-different-handlers
-  (let [c  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-inflight 1000}})
+  (let [c  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-in-flight 1000}})
         countDownOne (CountDownLatch. 50)
         countDownTwo (CountDownLatch. 60)]
     (mh/subscribe c {"mh/topic1" 0}
