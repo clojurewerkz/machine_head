@@ -13,10 +13,13 @@
 
 (def ci? (System/getenv "CI"))
 
+(defn connect []
+  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-inflight 50000}}))
+
 (deftest test-connection
   (dotimes [i 50]
     (let [id (format "mh/tests-%d" i)
-          c  (mh/connect "tcp://127.0.0.1:1883")]
+          c  (connect)]
       (is (mh/connected? c))
       (mh/disconnect-and-close c))))
 
@@ -109,21 +112,21 @@
       (mh/disconnect-and-close c))))
 
 (deftest test-publishing-empty-messages
-  (let [c (mh/connect "tcp://127.0.0.1:1883")]
+  (let [c (connect)]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh/topic1" nil))
     (mh/disconnect c)))
 
 (deftest test-publishing-messages
-  (let [c (mh/connect "tcp://127.0.0.1:1883")]
+  (let [c (connect)]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh/topic1" "hello"))
     (mh/disconnect c)))
 
 (deftest test-basic-topic-subscription
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (connect)
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic" 0} (fn [^String topic meta ^bytes payload]
                                      (.incrementAndGet i)))
@@ -135,8 +138,8 @@
     (mh/disconnect c)))
 
 (deftest test-basic-topic-subscription-with-multiple-consumers
-  (let [c1 (mh/connect "tcp://127.0.0.1:1883")
-        c2 (mh/connect "tcp://127.0.0.1:1883")
+  (let [c1 (connect)
+        c2 (connect)
         i  (AtomicInteger.)
         f  (fn [^String topic meta ^bytes payload]
              (.incrementAndGet i))
@@ -152,7 +155,7 @@
 
 
 (deftest test-topic-subscription-with-multi-segment-wildcard
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (connect)
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topics/#" 0}
                   (fn [^String topic meta ^bytes payload]
@@ -165,7 +168,7 @@
     (mh/disconnect c)))
 
 (deftest test-topic-subscription-with-single-segment-wildcard
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (connect)
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topics/+" 0} (fn [^String topic meta ^bytes payload]
                                         (.incrementAndGet i)))
@@ -183,7 +186,7 @@
     (mh/disconnect c)))
 
 (deftest test-multi-topic-subscription
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-inflight 1000}})
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic1" 0 "mh/topic2" 0}
                   (fn [^String topic meta ^bytes payload]
@@ -198,7 +201,7 @@
     (mh/disconnect c)))
 
 (deftest test-different-subscriptions-different-handlers
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (mh/connect "tcp://127.0.0.1:1883" {:opts {:max-inflight 1000}})
         countDownOne (CountDownLatch. 50)
         countDownTwo (CountDownLatch. 60)]
     (mh/subscribe c {"mh/topic1" 0}
@@ -220,7 +223,7 @@
 ;; very simplistic test, does not try to demonstrate
 ;; how QoS actually works. MK.
 (deftest test-basic-topic-subscription-with-qos
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (connect)
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic" 1}
                   (fn [^String topic meta ^bytes payload]
@@ -234,7 +237,7 @@
 
 
 (deftest test-multi-topic-subscription-with-qos
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (connect)
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/topic1" 0 "mh/topic3" 1}
                   (fn [^String topic meta ^bytes payload]
@@ -251,7 +254,7 @@
     (mh/disconnect c)))
 
 (deftest test-basic-topic-unsubscription
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (connect)
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/temp-topic" 0}
                   (fn [^String topic meta ^bytes payload]
@@ -265,7 +268,7 @@
 
 
 (deftest test-multi-topic-unsubscription
-  (let [c  (mh/connect "tcp://127.0.0.1:1883")
+  (let [c  (connect)
         i  (AtomicInteger.)]
     (mh/subscribe c {"mh/temp-topic1" 0
                      "mh/temp-topic2" 0
@@ -287,14 +290,14 @@
 
 ;; does not demonstrate how QoS actually works. MK.
 (deftest test-publishing-messages-with-qos-0
-  (let [c (mh/connect "tcp://127.0.0.1:1883")]
+  (let [c (connect)]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh/qos.topic1" "hello" 0))
     (mh/disconnect c)))
 
 (deftest test-publishing-messages-with-qos-1
-  (let [c (mh/connect "tcp://127.0.0.1:1883")]
+  (let [c (connect)]
     (is (mh/connected? c))
     (dotimes [i 1000]
       (mh/publish c "mh/qos.topic1" "hello" 1))

@@ -36,12 +36,14 @@
 
     * :username (string)
     * :password (string or char array)
-    * :keep-alive-interval (int)
+    * :auto-reconnect (bool)
     * :connection-timeout (int)
     * :clean-session (bool)
+    * :keep-alive-interval (int)
+    * :max-inflight (int)
     * :socket-factory (SocketFactory)
     * :will {:topic :payload :qos :retain}
-    * :auto-reconnect (bool)"
+    "
   ([^String uri]
     (connect uri {}))
   ([^String uri
