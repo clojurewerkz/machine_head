@@ -22,6 +22,8 @@
        (.setConnectionTimeout o (Integer/valueOf t)))
      (when-not (nil? (:clean-session m))
        (.setCleanSession o (:clean-session m)))
+     (when-let [m (:max-inflight m)]
+       (.setMaxInflight o m))
      (when-let [f (:socket-factory m)]
        (.setSocketFactory o f))
      (when-let [will (:will m)]
