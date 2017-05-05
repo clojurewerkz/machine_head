@@ -40,7 +40,7 @@
     * :connection-timeout (int)
     * :clean-session (bool)
     * :keep-alive-interval (int)
-    * :max-in-flight (int)
+    * :max-inflight (int)
     * :socket-factory (SocketFactory)
     * :will {:topic :payload :qos :retain}
     "
