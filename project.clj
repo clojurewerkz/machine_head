@@ -1,8 +1,8 @@
 (defproject clojurewerkz/machine_head "1.1.0-SNAPSHOT"
   :description "Clojure MQTT client"
   :dependencies [[org.clojure/clojure          "1.8.0"]
-                 [clojurewerkz/support         "1.1.0"]]
                  [org.eclipse.paho/org.eclipse.paho.client.mqttv3 "1.2.5"]
+                 [clojurewerkz/support         "1.5.0"]
   :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :master {:dependencies [[org.clojure/clojure "1.9.0-master-SNAPSHOT"]]}
              :dev {:resource-paths ["test/resources"]
