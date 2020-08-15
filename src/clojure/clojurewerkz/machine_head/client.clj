@@ -43,6 +43,12 @@
     * :max-inflight (int)
     * :socket-factory (SocketFactory)
     * :will {:topic :payload :qos :retain}
+    * :ssl-options (map)
+    * :server-uris (array of strings)
+    * :mqtt-version (either \"3.1\" or \"3.1.1\")
+
+    For details on SSL options, refer to:
+    https://www.eclipse.org/paho/files/javadoc/org/eclipse/paho/client/mqttv3/MqttConnectOptions.html#setSSLProperties-java.util.Properties-
     "
   ([^String uri]
     (connect uri {}))

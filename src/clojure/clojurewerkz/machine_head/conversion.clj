@@ -1,10 +1,11 @@
 (ns clojurewerkz.machine-head.conversion
   "Internal conversion functions that transform
    Clojure data structures to Paho Java client classes"
-  (:require [clojurewerkz.support.chars :refer [to-char-array]]
-            [clojurewerkz.support.bytes :refer [to-byte-array]])
-  (:import [org.eclipse.paho.client.mqttv3 MqttClient MqttConnectOptions
-            MqttMessage]))
+  (:require [clojurewerkz.support.chars         :refer [to-char-array]]
+            [clojurewerkz.support.bytes         :refer [to-byte-array]]
+            [clojurewerkz.propertied.properties :refer [map->properties]])
+  (:import [org.eclipse.paho.client.mqttv3
+            MqttClient MqttConnectOptions MqttMessage]))
 
 (defn ->connect-options
   [m]
@@ -12,29 +13,31 @@
   (if (instance? MqttConnectOptions m)
     m
     (let [o (MqttConnectOptions.)]
-     (when-let [u (:username m)]
-       (.setUserName o u))
-     (when-let [p (to-char-array (:password m))]
-       (.setPassword o p))
-     (when-let [i (:keep-alive-interval m)]
-       (.setKeepAliveInterval o i))
-     (when-let [t (:connection-timeout m)]
-       (.setConnectionTimeout o (Integer/valueOf t)))
-     (when-not (nil? (:clean-session m))
-       (.setCleanSession o (:clean-session m)))
-     (when-let [m (:max-inflight m)]
-       (.setMaxInflight o m))
-     (when-let [f (:socket-factory m)]
-       (.setSocketFactory o f))
-     (when-let [will (:will m)]
-       (.setWill ^MqttConnectOptions o
-                 ^String (get will :topic)
-                 ^bytes (get will :payload (byte-array 0))
-                 (Integer/valueOf (get will :qos 0))
-                 ^boolean (get will :retain false)))
-     (when-let [r (:auto-reconnect m)]
-       (.setAutomaticReconnect o r))
-     o)))
+      (doseq [[k v] m]
+        (condp #(%1 %2) {k v}
+          :username            :>> #(.setUserName o %)
+          :password            :>> #(.setPassword o (to-char-array %))
+          :keep-alive-interval :>> #(.setKeepAliveInterval o %)
+          :connection-timeout  :>> #(.setConnectionTimeout o (Integer/valueOf %))
+          :clean-session       :>> #(.setCleanSession o %)
+          :max-inflight        :>> #(.setMaxInflight o %)
+          :socket-factory      :>> #(.setSocketFactory o %)
+          :auto-reconnect      :>> #(.setAutomaticReconnect o %)
+          :server-uris         :>> #(.setServerURIs o (into-array String %))
+          :ssl-properties      :>> #(.setSSLProperties o (map->properties %))
+          :mqtt-version        :>> #(.setMqttVersion
+                                      o (case %
+                                          "3.1"
+                                          MqttConnectOptions/MQTT_VERSION_3_1
+                                          "3.1.1"
+                                          MqttConnectOptions/MQTT_VERSION_3_1_1))
+          :will                :>> #(.setWill
+                                      ^MqttConnectOptions o
+                                      ^String (:topic %)
+                                      ^bytes (:payload % (byte-array 0))
+                                      (Integer/valueOf (:qos % 0))
+                                      ^boolean (:retain % false))))
+      o)))
 
 (defprotocol MessageSource
   (^MqttMessage to-message [input] "Instantiates an MQTT message from input"))
