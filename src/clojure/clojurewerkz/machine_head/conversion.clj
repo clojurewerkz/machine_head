@@ -25,6 +25,7 @@
           :auto-reconnect      :>> #(.setAutomaticReconnect o %)
           :server-uris         :>> #(.setServerURIs o (into-array String %))
           :ssl-properties      :>> #(.setSSLProperties o (map->properties %))
+          :custom-websocket-headers :>> #(.setCustomWebSocketHeaders o (map->properties %))
           :mqtt-version        :>> #(.setMqttVersion
                                       o (case %
                                           "3.1"

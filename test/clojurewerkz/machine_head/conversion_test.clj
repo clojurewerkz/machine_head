@@ -16,6 +16,7 @@
               :auto-reconnect      true
               :server-uris         ["ssl://mqtt.example.com"]
               :ssl-properties      {"com.ibm.ssl.protocol" "SSLv3"}
+              :custom-websocket-headers {"X-Custom-Header" "foo"}
               :mqtt-version        "3.1.1"
               :will                {:topic   "will"
                                     :qos     0
@@ -32,6 +33,7 @@
                        :auto-reconnect      (.isAutomaticReconnect o)
                        :server-uris         (vec (.getServerURIs o))
                        :ssl-properties      (properties->map (.getSSLProperties o))
+                       :custom-websocket-headers (properties->map (.getCustomWebSocketHeaders o))
                        :mqtt-version        (condp = (.getMqttVersion o)
                                               MqttConnectOptions/MQTT_VERSION_3_1
                                               "3.1"
