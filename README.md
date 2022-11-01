@@ -22,7 +22,8 @@ To subscribe for announcements of releases, important changes and so on, please 
 
 ## Project Maturity
 
-Machine Head is *very* young and not complete. However, the key functionality
+Machine Head is not a new project but some Paho Java features may be missing from the Clojure API.
+However, the key functionality
 (connections, publishing, subscriptions) is supported. Barring the fact that
 [documentation](http://clojuremqtt.info/) is work in progress,
 we encourage you to give the library a try.
@@ -67,11 +68,7 @@ With Maven:
 
 Machine Head [documentation guides](http://clojuremqtt.info) are work in progress:
 
- * [Getting Started](http://clojuremqtt.info/articles/getting_started.html)
-
-### API Reference
-
-[API reference](http://reference.clojuremqtt.info) is also available.
+ * [Getting Started](https://github.com/clojurewerkz/machine_head/blob/master/docs/guides/guides.md)
 
 ### Examples
 
@@ -89,20 +86,12 @@ Machine Head is tested against [RabbitMQ with MQTT plugin](http://www.rabbitmq.c
 
 Machine Head requires Clojure 1.6+.
 
-
-## Continuous Integration Status
-
-[![Continuous Integration status](https://secure.travis-ci.org/clojurewerkz/machine_head.png)](http://travis-ci.org/clojurewerkz/machine_head)
-
-
-
 ## Machine Head Is a ClojureWerkz Project
 
 Machine Head is part of the [group of Clojure libraries known as ClojureWerkz](http://clojurewerkz.org), together with
 
  * [Langohr](http://clojurerabbitmq.info)
  * [Elastisch](http://clojureelasticsearch.info)
- * [Cassaforte](http://clojurecassandra.info)
  * [Monger](http://clojuremongodb.info)
  * [Titanium](http://titanium.clojurewerkz.org)
  * [Neocons](http://clojureneo4j.info)
