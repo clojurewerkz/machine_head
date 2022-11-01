@@ -1,13 +1,13 @@
 # Machine Head, a Clojure MQTT Client
 
-Machine Head is a [Clojure MQTT client](http://clojuremqtt.info).
+Machine Head is a Clojure MQTT client.
 
 
 ## Project Goals
 
- * Cover all (or nearly all) MQTT v3 features
- * Be [well documented](http://clojuremqtt.info)
- * Be [well tested](https://github.com/clojurewerkz/machine_head/tree/master/test/clojurewerkz/machine_head)
+ * Cover all key MQTT v3 features
+ * Be well documented
+ * Be well tested
  * Provide a convenient API (Paho Java's API is poorly designed)
  * Don't introduce a lot of latency and throughput overhead
 
