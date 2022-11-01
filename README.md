@@ -68,7 +68,7 @@ With Maven:
 
 Machine Head [documentation guides](http://clojuremqtt.info) are work in progress:
 
- * [Getting Started](https://github.com/clojurewerkz/machine_head/blob/master/docs/guides/guides.md)
+ * [Getting Started](https://github.com/clojurewerkz/machine_head/blob/master/docs/guides/getting_started.md)
 
 ### Examples
 
