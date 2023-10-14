@@ -21,12 +21,12 @@ This work is licensed under a <a rel="license" href="http://creativecommons.org/
 
 ## What version of Machine Head does this guide cover?
 
-This guide covers Machine Head 1.0.0.
+This guide covers Machine Head 1.1.0.
 
 
 ## Supported Clojure Versions
 
-Machine Head requires Clojure 1.4+. The latest stable release is recommended.
+Machine Head requires Clojure 1.8+. The latest stable release is recommended.
 
 
 ## Supported MQTT Brokers
@@ -109,7 +109,7 @@ Machine Head artifacts are [released to Clojars](https://clojars.org/clojurewerk
 Add the dependency:
 
 ``` clojure
-[clojurewerkz/machine_head "1.0.0"]
+[clojurewerkz/machine_head "1.1.0"]
 ```
 
 ### With Maven
@@ -133,7 +133,7 @@ And then the dependency:
 <dependency>
   <groupId>clojurewerkz</groupId>
   <artifactId>machine_head</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
